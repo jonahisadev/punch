@@ -1,0 +1,39 @@
+import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import crypto from "crypto";
+
+const routes = async (fastify: FastifyInstance) => {
+  fastify.post("/", async (req: FastifyRequest, res: FastifyReply) => {
+    const authHeader = req.headers.authorization;
+    const bearerToken = process.env.WEBHOOK_BEARER_TOKEN;
+
+    if (!bearerToken) {
+      return res.status(500).send({
+        ok: false,
+        error: "Bearer token not configured",
+      });
+    }
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).send({
+        ok: false,
+        error: "Missing or invalid Authorization header",
+      });
+    }
+
+    const token = authHeader.substring(7); // Remove "Bearer " prefix
+
+    // Constant-time comparison to prevent timing attacks
+    if (!crypto.timingSafeEqual(Buffer.from(token), Buffer.from(bearerToken))) {
+      return res.status(401).send({
+        ok: false,
+        error: "Invalid token",
+      });
+    }
+
+    return res.status(200).send({
+      ok: true,
+    });
+  });
+};
+
+export default routes;
