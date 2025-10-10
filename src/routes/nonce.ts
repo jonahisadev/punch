@@ -1,14 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import crypto from "crypto";
-import { webhookQueue } from "../services/queue";
-
-interface WebhookRequestBody {
-  topic: string;
-  data: Record<string, any>;
-}
+import { validNonces } from "../services/nonce";
 
 const routes = async (fastify: FastifyInstance) => {
-  fastify.post("/", async (req: FastifyRequest<{ Body: WebhookRequestBody }>, res: FastifyReply) => {
+  fastify.post("/nonce", async (req: FastifyRequest, res: FastifyReply) => {
     const authHeader = req.headers.authorization;
     const bearerToken = process.env.WEBHOOK_BEARER_TOKEN;
 
@@ -26,7 +21,7 @@ const routes = async (fastify: FastifyInstance) => {
       });
     }
 
-    const token = authHeader.substring(7); // Remove "Bearer " prefix
+    const token = authHeader.substring(7);
 
     // Constant-time comparison to prevent timing attacks
     if (!crypto.timingSafeEqual(Buffer.from(token), Buffer.from(bearerToken))) {
@@ -36,20 +31,13 @@ const routes = async (fastify: FastifyInstance) => {
       });
     }
 
-    // Validate request body
-    const { topic, data } = req.body;
-    if (!topic || !data) {
-      return res.status(400).send({
-        ok: false,
-        error: "Topic and data are required",
-      });
-    }
-
-    // Publish to Bull queue
-    await webhookQueue.add({ topic, data });
+    // Generate a cryptographically secure nonce
+    const nonce = crypto.randomBytes(32).toString("hex");
+    validNonces.add(nonce);
 
     return res.status(200).send({
       ok: true,
+      nonce,
     });
   });
 };
