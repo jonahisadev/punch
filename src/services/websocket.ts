@@ -15,7 +15,7 @@ export const clients = new Map<WebSocket, WebSocketClient>();
 export const topicSubscriptions = new Map<string, Set<WebSocket>>();
 
 export const setupWebSocket = async (fastify: FastifyInstance) => {
-  fastify.get("/ws", { websocket: true }, (socket, req) => {
+  fastify.get("/ws", { websocket: true }, (socket, _req) => {
     const client: WebSocketClient = {
       socket,
       topics: new Set(),
@@ -67,7 +67,7 @@ export const setupWebSocket = async (fastify: FastifyInstance) => {
               })
             );
         }
-      } catch (err) {
+      } catch {
         socket.send(
           JSON.stringify({
             type: "ERROR",
@@ -142,7 +142,10 @@ function handleSubscribe(
   if (!topicSubscriptions.has(topic)) {
     topicSubscriptions.set(topic, new Set());
   }
-  topicSubscriptions.get(topic)!.add(socket);
+  const topicSubs = topicSubscriptions.get(topic);
+  if (topicSubs) {
+    topicSubs.add(socket);
+  }
 
   socket.send(
     JSON.stringify({
@@ -202,7 +205,7 @@ function handleDisconnect(socket: WebSocket, client: WebSocketClient) {
 }
 
 // Broadcast a message to all clients subscribed to a topic
-export function broadcastToTopic(topic: string, data: Record<string, any>) {
+export function broadcastToTopic(topic: string, data: Record<string, unknown>) {
   const subscribers = topicSubscriptions.get(topic);
   if (!subscribers) return;
 
@@ -215,6 +218,7 @@ export function broadcastToTopic(topic: string, data: Record<string, any>) {
     try {
       socket.send(message);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error("Error sending message to client:", err);
     }
   }

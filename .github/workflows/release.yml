@@ -42,8 +42,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/jonahisadev/nothing:latest
-            ghcr.io/jonahisadev/nothing:${{ github.sha }}
+            ghcr.io/jonahisadev/punch:latest
+            ghcr.io/jonahisadev/punch:${{ github.sha }}
 
       - name: Create env
         run: |

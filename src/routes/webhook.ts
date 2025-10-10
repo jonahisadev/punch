@@ -1,10 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import crypto from "crypto";
-import { webhookQueue } from "../services/queue";
+import { getWebhookQueue } from "../services/queue";
 
 interface WebhookRequestBody {
   topic: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 }
 
 const routes = async (fastify: FastifyInstance) => {
@@ -46,7 +46,7 @@ const routes = async (fastify: FastifyInstance) => {
     }
 
     // Publish to Bull queue
-    await webhookQueue.add({ topic, data });
+    await getWebhookQueue().add({ topic, data });
 
     return res.status(200).send({
       ok: true,
