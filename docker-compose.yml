@@ -7,6 +7,7 @@ services:
       - "3000:3000"
     environment:
       WEBHOOK_BEARER_TOKEN_FILE: /run/secrets/punch_bearer_token
+      REDIS_HOST: redis
       NODE_ENV: production
       PORT: 3000
   redis:
