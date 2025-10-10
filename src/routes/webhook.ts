@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import crypto from "crypto";
 import { getWebhookQueue } from "../services/queue";
+import { getWebhookBearerToken } from "../services/config";
 
 interface WebhookRequestBody {
   topic: string;
@@ -10,7 +11,7 @@ interface WebhookRequestBody {
 const routes = async (fastify: FastifyInstance) => {
   fastify.post("/", async (req: FastifyRequest<{ Body: WebhookRequestBody }>, res: FastifyReply) => {
     const authHeader = req.headers.authorization;
-    const bearerToken = process.env.WEBHOOK_BEARER_TOKEN;
+    const bearerToken = getWebhookBearerToken();
 
     if (!bearerToken) {
       return res.status(500).send({

@@ -1,11 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import crypto from "crypto";
 import { validNonces } from "../services/nonce";
+import { getWebhookBearerToken } from "../services/config";
 
 const routes = async (fastify: FastifyInstance) => {
   fastify.post("/nonce", async (req: FastifyRequest, res: FastifyReply) => {
     const authHeader = req.headers.authorization;
-    const bearerToken = process.env.WEBHOOK_BEARER_TOKEN;
+    const bearerToken = getWebhookBearerToken();
 
     if (!bearerToken) {
       return res.status(500).send({
