@@ -6,10 +6,14 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - WEBHOOK_BEARER_TOKEN_FILE: /run/secrets/punch_bearer_token
-      - NODE_ENV: production
-      - PORT: 3000
+      WEBHOOK_BEARER_TOKEN_FILE: /run/secrets/punch_bearer_token
+      NODE_ENV: production
+      PORT: 3000
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
+
+secrets:
+  punch_bearer_token:
+    external: true
