@@ -33,6 +33,14 @@ export const setupWebSocket = async (fastify: FastifyInstance) => {
             handleConnect(socket, client, data.nonce);
             break;
 
+          case "PING":
+            socket.send(
+              JSON.stringify({
+                type: "PONG",
+              })
+            );
+            break;
+
           case "SUBSCRIBE":
             if (!client.authenticated) {
               socket.send(
