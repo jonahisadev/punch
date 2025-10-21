@@ -210,6 +210,7 @@ export function broadcastToTopic(topic: string, data: Record<string, unknown>) {
   if (!subscribers) return;
 
   const message = JSON.stringify({
+    type: "EVENT",
     topic,
     data,
   });
