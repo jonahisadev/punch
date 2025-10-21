@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import crypto from "crypto";
-import { validNonces } from "../services/nonce";
+import { storeNonce } from "../services/nonce";
 import { getWebhookBearerToken } from "../services/config";
 
 const routes = async (fastify: FastifyInstance) => {
@@ -34,7 +34,7 @@ const routes = async (fastify: FastifyInstance) => {
 
     // Generate a cryptographically secure nonce
     const nonce = crypto.randomBytes(32).toString("hex");
-    validNonces.add(nonce);
+    await storeNonce(nonce);
 
     return res.status(200).send({
       ok: true,

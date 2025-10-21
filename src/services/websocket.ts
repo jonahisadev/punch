@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { WebSocket } from "@fastify/websocket";
-import { validNonces } from "./nonce";
+import { verifyAndConsumeNonce } from "./nonce";
 
 interface WebSocketClient {
   socket: WebSocket;
@@ -83,7 +83,7 @@ export const setupWebSocket = async (fastify: FastifyInstance) => {
   });
 };
 
-function handleConnect(
+async function handleConnect(
   socket: WebSocket,
   client: WebSocketClient,
   nonce: string
@@ -99,7 +99,9 @@ function handleConnect(
     return;
   }
 
-  if (!validNonces.has(nonce)) {
+  // Verify and consume the nonce atomically
+  const isValid = await verifyAndConsumeNonce(nonce);
+  if (!isValid) {
     socket.send(
       JSON.stringify({
         type: "ERROR",
@@ -110,8 +112,7 @@ function handleConnect(
     return;
   }
 
-  // Valid nonce - authenticate and remove from valid list
-  validNonces.delete(nonce);
+  // Valid nonce - authenticate
   client.authenticated = true;
 
   socket.send(
