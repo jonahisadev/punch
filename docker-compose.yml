@@ -10,6 +10,8 @@ services:
       REDIS_HOST: redis
       NODE_ENV: production
       PORT: 3000
+    volumes:
+      - /etc/enigma/token:/etc/enigma/token:ro
   redis:
     image: redis:latest
     ports:
