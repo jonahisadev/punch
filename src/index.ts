@@ -6,12 +6,17 @@ import webhook from "./routes/webhook";
 import nonce from "./routes/nonce";
 import { setupWebSocket } from "./services/websocket";
 import { startWorker } from "./services/worker";
+import { loadFromManifest as enigmaInit } from "@jonahisadev/enigma";
 
 const fastify = Fastify({
   logger: true,
 });
 
 const main = async () => {
+  if (process.env.NODE_ENV === "production") {
+    await enigmaInit();
+  }
+
   // Register WebSocket plugin
   await fastify.register(fastifyWebsocket);
 

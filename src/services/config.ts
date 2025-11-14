@@ -8,25 +8,27 @@ let cachedToken: string | undefined;
  * The token is cached after the first load.
  */
 export function getWebhookBearerToken(): string | undefined {
-  if (cachedToken !== undefined) {
-    return cachedToken;
-  }
+  return process.env.WEBHOOK_BEARER_TOKEN;
 
-  const tokenFile = process.env.WEBHOOK_BEARER_TOKEN_FILE;
-
-  if (tokenFile) {
-    try {
-      const token = fs.readFileSync(tokenFile, "utf-8").trim();
-      if (token) {
-        cachedToken = token;
-        return cachedToken;
-      }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(`Failed to read token from file ${tokenFile}:`, error);
-    }
-  }
-
-  cachedToken = process.env.WEBHOOK_BEARER_TOKEN;
-  return cachedToken;
+  // if (cachedToken !== undefined) {
+  //   return cachedToken;
+  // }
+  //
+  // const tokenFile = process.env.WEBHOOK_BEARER_TOKEN_FILE;
+  //
+  // if (tokenFile) {
+  //   try {
+  //     const token = fs.readFileSync(tokenFile, "utf-8").trim();
+  //     if (token) {
+  //       cachedToken = token;
+  //       return cachedToken;
+  //     }
+  //   } catch (error) {
+  //     // eslint-disable-next-line no-console
+  //     console.error(`Failed to read token from file ${tokenFile}:`, error);
+  //   }
+  // }
+  //
+  // cachedToken = process.env.WEBHOOK_BEARER_TOKEN;
+  // return cachedToken;
 }

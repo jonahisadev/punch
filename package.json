@@ -17,6 +17,7 @@
   "dependencies": {
     "@fastify/autoload": "^6.3.1",
     "@fastify/websocket": "^11.2.0",
+    "@jonahisadev/enigma": "^0.4.1",
     "@types/node": "^22.15.30",
     "bull": "^4.16.5",
     "dotenv": "^16.5.0",

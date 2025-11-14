@@ -1,0 +1,9 @@
+version: 1
+auth:
+  role: 029b4ed9-5b93-4a42-b7ca-ca2505322069
+  token: /etc/enigma/token
+vaults:
+  - id: 766b1ce7-8bfb-4eb3-ae46-50888349e760
+    secrets:
+      - name: bearer_token
+        env: WEBHOOK_BEARER_TOKEN
