@@ -13,6 +13,7 @@ jobs:
 
   deploy:
     name: "Deploy to VPS"
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,6 +49,8 @@ jobs:
           tags: |
             ghcr.io/jonahisadev/punch:latest
             ghcr.io/jonahisadev/punch:${{ github.sha }}
+          build-args: |
+            GITHUB_TOKEN=${{ secrets.GHCR_PASS }}
 
       - name: Create env
         run: |
