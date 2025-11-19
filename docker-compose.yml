@@ -1,12 +1,9 @@
 services:
   app:
     image: ghcr.io/jonahisadev/punch:latest
-    secrets:
-      - punch_bearer_token
     ports:
       - "3000:3000"
     environment:
-      WEBHOOK_BEARER_TOKEN_FILE: /run/secrets/punch_bearer_token
       REDIS_HOST: redis
       NODE_ENV: production
       PORT: 3000
@@ -16,7 +13,3 @@ services:
     image: redis:latest
     ports:
       - "6379:6379"
-
-secrets:
-  punch_bearer_token:
-    external: true
