@@ -15,6 +15,21 @@ export const clients = new Map<WebSocket, WebSocketClient>();
 export const topicSubscriptions = new Map<string, Set<WebSocket>>();
 
 export const setupWebSocket = async (fastify: FastifyInstance) => {
+  // Send a ping to all connected clients every 30 seconds to keep
+  // connections alive through proxies/load balancers and detect
+  // dead connections.
+  const pingInterval = setInterval(() => {
+    for (const [socket] of clients) {
+      if (socket.readyState === socket.OPEN) {
+        socket.ping();
+      }
+    }
+  }, 30_000);
+
+  fastify.addHook("onClose", () => {
+    clearInterval(pingInterval);
+  });
+
   fastify.get("/ws", { websocket: true }, (socket, _req) => {
     const client: WebSocketClient = {
       socket,

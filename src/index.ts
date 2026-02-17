@@ -18,7 +18,11 @@ const main = async () => {
   }
 
   // Register WebSocket plugin
-  await fastify.register(fastifyWebsocket);
+  await fastify.register(fastifyWebsocket, {
+    options: {
+      clientTracking: true,
+    },
+  });
 
   // Register routes
   fastify.register(root);
