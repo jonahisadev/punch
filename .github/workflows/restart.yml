@@ -16,6 +16,19 @@ jobs:
           key: ${{ secrets.SSH_DEPLOY_KEY }}
           envs: SWARM_STACK
           script: |
-            docker stack services $SWARM_STACK | tail -n +2 | awk '{print $1}' | xargs docker service update --force
+            set -eu
+
+            if [ -z "${SWARM_STACK:-}" ]; then
+              echo "SWARM_STACK is not configured"
+              exit 1
+            fi
+
+            services="$(docker stack services "$SWARM_STACK" --format '{{.Name}}')"
+            if [ -z "$services" ]; then
+              echo "No services found in stack: $SWARM_STACK"
+              exit 1
+            fi
+
+            printf '%s\n' "$services" | xargs -r -n 1 docker service update --force
         env:
           SWARM_STACK: ${{ vars.SWARM_STACK }}
